@@ -2,7 +2,7 @@ import type { HeadSnapshot, PrimitiveResult, VerificationReport, Verdict } from 
 import type { MachineDeliveryV1 } from "./live-delivery.js";
 export declare const MACHINE_SCHEMA_VERSION: "1.0";
 export declare const WEBHOOK_SCHEMA_VERSION: "1.0";
-export declare const TOOL_VERSION: "0.2.0";
+export declare const TOOL_VERSION: "0.2.1";
 export type VerificationExitCode = 0 | 1;
 export interface MachineCheckV1 {
     primitive: PrimitiveResult["primitive"];

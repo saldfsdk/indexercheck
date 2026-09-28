@@ -4,10 +4,10 @@ import { validateProjectConfig } from "../core/load-config.js";
 import { TOOL_VERSION } from "../core/delivery.js";
 import type { IndexerCheckConfig } from "../core/types.js";
 
-const expectedVersion = "0.2.0";
-if (TOOL_VERSION !== expectedVersion) throw new Error(`unexpected tool version ${TOOL_VERSION}`);
 const pkg = JSON.parse(await readFile("package.json", "utf8"));
-if (pkg.version !== expectedVersion) throw new Error(`unexpected package version ${pkg.version}`);
+if (pkg.version !== TOOL_VERSION) {
+  throw new Error(`package version ${pkg.version} != tool version ${TOOL_VERSION}`);
+}
 const sdkExport = pkg.exports?.["./sdk"];
 const sdkImport = typeof sdkExport === "string" ? sdkExport : sdkExport?.import ?? sdkExport?.default;
 if (sdkImport !== "./dist/sdk.js") throw new Error("package does not export indexercheck/sdk");

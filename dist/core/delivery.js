@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 export const MACHINE_SCHEMA_VERSION = "1.0";
 export const WEBHOOK_SCHEMA_VERSION = "1.0";
-export const TOOL_VERSION = "0.2.0";
+export const TOOL_VERSION = "0.2.1";
 function asRecord(value) {
     return value && typeof value === "object" && !Array.isArray(value) ? value : undefined;
 }

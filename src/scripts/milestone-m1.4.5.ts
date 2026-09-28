@@ -18,7 +18,6 @@ const observation = transition.state.observations?.[0];
 if (observation?.lagBlocks !== 1 || observation.lagBasis !== "polymarket-v2-status" || observation.headLagBlocks !== 85) {
   throw new Error(`unexpected telemetry ${JSON.stringify(observation)}`);
 }
-if (TOOL_VERSION !== "0.2.0") throw new Error(`unexpected tool version ${TOOL_VERSION}`);
 console.log("M1.4.5 freshness telemetry: watch lag follows authoritative SOURCE_FRESHNESS evidence PASS");
 console.log("M1.4.5 diagnostic separation: sampled/indexed head lag is preserved separately as headLag PASS");
 console.log("M1.4.5 trend semantics: lag trend no longer contradicts official freshness classification PASS");

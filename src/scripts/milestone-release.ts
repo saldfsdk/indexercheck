@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { TOOL_VERSION } from "../core/delivery.js";
 
-const EXPECTED_VERSION = "0.2.0";
+const EXPECTED_VERSION = "0.2.1";
 const pkg = JSON.parse(await readFile("package.json", "utf8"));
 if (TOOL_VERSION !== EXPECTED_VERSION) throw new Error(`tool version ${TOOL_VERSION} != ${EXPECTED_VERSION}`);
 if (pkg.version !== TOOL_VERSION) throw new Error(`package version ${pkg.version} != machine artifact version ${TOOL_VERSION}`);
@@ -27,13 +27,16 @@ for (const path of [
   "CHANGELOG.md",
   "LICENSE",
   "RELEASE_NOTES_v0.2.0.md",
+  "RELEASE_NOTES_v0.2.1.md",
   "docs/M1-DEVELOPMENT-NOTES.md",
   "docs/M2-DEVELOPMENT-NOTES.md",
+  "docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md",
   "scripts/package-smoke.mjs",
   "scripts/check-npm-name.mjs",
   "examples/polymarket-pilot.json",
   "examples/goldsky-euler-mainnet-pilot.json",
   "examples/generic-evm-log.example.json",
+  "examples/envio-hyperindex.example.json",
   "examples/generic-adapter.example.json",
   "examples/adapters/custom-indexer.mjs",
   "examples/adapters/custom-indexer.ts",
@@ -52,18 +55,20 @@ const requiredPackEntries = [
   "dist/sources",
   "schemas",
   "examples/generic-evm-log.example.json",
+  "examples/envio-hyperindex.example.json",
   "examples/generic-adapter.example.json",
   "LICENSE",
-  "RELEASE_NOTES_v0.2.0.md"
+  "RELEASE_NOTES_v0.2.0.md",
+  "RELEASE_NOTES_v0.2.1.md"
 ];
 for (const entry of requiredPackEntries) if (!pkg.files.includes(entry)) throw new Error(`npm files whitelist missing ${entry}`);
 for (const forbidden of ["src", "dist/tests", "docs"]) {
   if (pkg.files.some((entry: string) => entry === forbidden || entry.startsWith(`${forbidden}/`))) throw new Error(`npm files whitelist should not ship ${forbidden}`);
 }
 
-console.log(`v0.2.0 release: package + machine artifact versions agree (${TOOL_VERSION}) PASS`);
-console.log("v0.2.0 release: M2.0 provenance + M2.1 completeness + M2.2 state + M2.3 adapter SDK surface retained PASS");
-console.log("v0.2.0 release: MIT license + public npm metadata retained PASS");
-console.log("v0.2.0 release: repository build pins TypeScript 5.8.3 PASS");
-console.log("v0.2.0 release: clean-install package smoke + npm-name + public-repository first-publish gates retained PASS");
-console.log("v0.2.0 release: report + watch event/state + webhook v1 schemas retained PASS");
+console.log(`v0.2.1 release: package + machine artifact versions agree (${TOOL_VERSION}) PASS`);
+console.log("v0.2.1 release: M2 proof surface + Adapter SDK retained PASS");
+console.log("v0.2.1 release: MIT license + public npm metadata retained PASS");
+console.log("v0.2.1 release: repository build pins TypeScript 5.8.3 PASS");
+console.log("v0.2.1 release: clean-install package smoke + public repository/publish gates retained PASS");
+console.log("v0.2.1 release: report + watch event/state + webhook v1 schemas retained PASS");

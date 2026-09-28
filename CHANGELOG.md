@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.1 — 2026-09-28
+
+### External onboarding and diagnostics
+
+- Added an Envio HyperIndex onboarding example derived from a real Robinhood Chain external pilot.
+- Documented proof-ready Envio raw-event identity requirements, including `raw_events` and transaction hash field selection.
+- Fixed the generic GraphQL reverse-completeness example so historical range variables are actually consumed by the query.
+- Clarified that `historicalRangeComplete: true` is an explicit full-range coverage contract and must not be used with unresolved truncation/pagination.
+- Preserved structured RPC quorum evidence when canonical reverse-completeness proof becomes `UNKNOWN`.
+- Added human CLI diagnostics for failed RPC providers and provider errors.
+- Preserved nested quorum evidence through `SourceUnavailableError`.
+- Added two deterministic quorum-diagnostic regression tests, bringing the suite to 130 tests.
+- Added External Pilot #1 documentation covering positive provenance/completeness controls and deliberate `DRIFT`/`INCOMPLETE` negative controls.
+- No new proof primitive and no weakening of canonical-truth or fail-closed safety semantics.
+
 ## 0.2.0 — 2026-09-28
 
 ### Public release baseline

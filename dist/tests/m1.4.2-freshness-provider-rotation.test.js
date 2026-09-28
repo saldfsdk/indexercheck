@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { TOOL_VERSION } from "../core/delivery.js";
 import { advanceWatchState } from "../core/watch.js";
 import { buildPresetConfig } from "../core/init.js";
 import { DEFAULT_POLYGON_RPC_URLS } from "../live/polymarket-data-api.js";
@@ -7,7 +8,7 @@ function staleReport(at) {
     return {
         schemaVersion: "1.0",
         kind: "IndexerCheckVerification",
-        tool: { name: "indexercheck", version: "0.2.0" },
+        tool: { name: "indexercheck", version: TOOL_VERSION },
         generatedAt: at,
         project: { name: "polymarket-production-pilot" },
         outcome: { verdict: "STALLED", exitCode: 1, passed: false, incidentCount: 0 },
@@ -32,7 +33,7 @@ function passReport(at) {
     return {
         schemaVersion: "1.0",
         kind: "IndexerCheckVerification",
-        tool: { name: "indexercheck", version: "0.2.0" },
+        tool: { name: "indexercheck", version: TOOL_VERSION },
         generatedAt: at,
         project: { name: "polymarket-production-pilot" },
         outcome: { verdict: "PASS", exitCode: 0, passed: true, incidentCount: 0 },

@@ -159,8 +159,34 @@ function render(report: VerificationReport, delivery?: MachineDeliveryV1): void 
     const completeness = result.primitive === "TRANSACTION_COMPLETENESS" && result.evidence?.classification
       ? ` classification=${result.evidence.classification} canonical=${result.evidence.canonicalTransactions ?? "?"} missing=${Array.isArray(result.evidence.missingTransactions) ? result.evidence.missingTransactions.length : "?"}`
       : "";
-    console.log(`${result.status.padEnd(7)} ${result.primitive.padEnd(24)} ${result.name}${observed}${bad}${good}${cause}${freshness}${completeness}`);
+    const eventCompleteness = result.primitive === "EVENT_COMPLETENESS" && result.evidence?.classification
+      ? ` classification=${result.evidence.classification}`
+      : "";
+
+    console.log(`${result.status.padEnd(7)} ${result.primitive.padEnd(24)} ${result.name}${observed}${bad}${good}${cause}${freshness}${completeness}${eventCompleteness}`);
     console.log(`        ${result.summary}`);
+
+    if (result.status === "UNKNOWN" && result.evidence?.rpcQuorum) {
+      const rpc = result.evidence.rpcQuorum as Record<string, unknown>;
+      const agreeing = Array.isArray(rpc.agreeingProviders) ? rpc.agreeingProviders.length : "?";
+      const successful = Array.isArray(rpc.successfulProviders) ? rpc.successfulProviders.length : "?";
+      const minAgreement = rpc.minAgreement ?? "?";
+      const distinct = rpc.distinctResponses ?? "?";
+
+      console.log(
+        `        RPC quorum method=${rpc.method ?? "?"} agreement=${agreeing}/${minAgreement} successful=${successful} distinct=${distinct}`,
+      );
+
+      const failedProviders = Array.isArray(rpc.failedProviders)
+        ? rpc.failedProviders as Array<Record<string, unknown>>
+        : [];
+
+      for (const failure of failedProviders) {
+        console.log(
+          `        RPC failed ${failure.url ?? "?"}: ${failure.error ?? "unknown error"}`,
+        );
+      }
+    }
   }
   for (const result of report.results.filter((item) => item.primitive === "INCIDENT_REPORT")) renderIncident(result);
   if (delivery) renderDelivery(delivery);

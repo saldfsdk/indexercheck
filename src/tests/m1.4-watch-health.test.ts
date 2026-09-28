@@ -1,13 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { MachineReportV1 } from "../core/delivery.js";
+import { TOOL_VERSION, type MachineReportV1 } from "../core/delivery.js";
 import { advanceWatchState, deriveQuorumHealth } from "../core/watch.js";
 
 function reportWithQuorum(quorum: Record<string, unknown>): MachineReportV1 {
   return {
     schemaVersion: "1.0",
     kind: "IndexerCheckVerification",
-    tool: { name: "indexercheck", version: "0.2.0" },
+    tool: { name: "indexercheck", version: TOOL_VERSION },
     generatedAt: "2026-09-27T10:30:00.000Z",
     project: { name: "polymarket-production-pilot" },
     outcome: { verdict: "PASS", exitCode: 0, passed: true, incidentCount: 0 },

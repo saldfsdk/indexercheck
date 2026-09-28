@@ -100,12 +100,15 @@ export interface SnapshotSource {
 export class SourceUnavailableError extends Error {
   readonly sourceType: string;
   readonly operation: string;
+  readonly cause: unknown;
+
   constructor(sourceType: string, operation: string, cause: unknown) {
     const reason = cause instanceof Error ? cause.message : String(cause);
     super(`${sourceType} source unavailable during ${operation}: ${reason}`);
     this.name = "SourceUnavailableError";
     this.sourceType = sourceType;
     this.operation = operation;
+    this.cause = cause;
   }
 }
 

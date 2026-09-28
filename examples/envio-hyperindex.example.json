@@ -1,0 +1,109 @@
+{
+  "name": "envio-hyperindex-integrity",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://rpc-1.example",
+    "fallbackUrls": [
+      "https://rpc-2.example",
+      "https://rpc-3.example"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 20,
+      "agreementLagBlocks": 5
+    },
+    "headTag": "latest",
+    "events": {
+      "Transfer": {
+        "address": "0x1111111111111111111111111111111111111111",
+        "topics": [
+          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        ],
+        "fromBlock": "latest",
+        "toBlock": "latest",
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "indexed": {
+    "type": "graphql",
+    "url": "http://localhost:8080/v1/graphql",
+    "headers": {
+      "x-hasura-admin-secret": "testing"
+    },
+    "head": {
+      "query": "query { _meta { progressBlock isReady } }",
+      "blockPath": "_meta.0.progressBlock",
+      "syncedPath": "_meta.0.isReady"
+    },
+    "events": {
+      "Transfer": {
+        "query": "query { raw_events(where: {contract_name: {_eq: \"StockToken\"}, event_name: {_eq: \"Transfer\"}, src_address: {_eq: \"0x1111111111111111111111111111111111111111\"}}, order_by: [{block_number: desc}, {log_index: desc}], limit: 3) { block_number log_index src_address transaction_fields params } }",
+        "arrayPath": "raw_events",
+        "blockPath": "block_number",
+        "txHashPath": "transaction_fields.hash",
+        "logIndexPath": "log_index",
+        "addressPath": "src_address",
+        "eventName": "Transfer"
+      },
+      "TransferRange": {
+        "query": "query($fromBlock: Int!, $toBlock: Int!) { raw_events(where: {contract_name: {_eq: \"StockToken\"}, event_name: {_eq: \"Transfer\"}, src_address: {_eq: \"0x1111111111111111111111111111111111111111\"}, block_number: {_gte: $fromBlock, _lte: $toBlock}}, order_by: [{block_number: asc}, {log_index: asc}]) { block_number log_index src_address transaction_fields params } }",
+        "arrayPath": "raw_events",
+        "blockPath": "block_number",
+        "txHashPath": "transaction_fields.hash",
+        "logIndexPath": "log_index",
+        "addressPath": "src_address",
+        "eventName": "Transfer",
+        "historicalFromBlockVariable": "fromBlock",
+        "historicalToBlockVariable": "toBlock",
+        "historicalRangeComplete": true
+      }
+    }
+  },
+  "checks": {
+    "eventCompleteness": [
+      {
+        "name": "envio-transfer-completeness",
+        "stream": "TransferRange",
+        "proof": {
+          "type": "evm-log-reverse",
+          "canonicalStream": "Transfer",
+          "windowBlocks": 20,
+          "settlementLagBlocks": 5
+        }
+      }
+    ],
+    "provenance": [
+      {
+        "name": "envio-transfer-provenance",
+        "stream": "Transfer",
+        "minSamples": 3,
+        "proof": {
+          "type": "evm-log",
+          "canonicalStream": "Transfer",
+          "sampleSize": 3,
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "indexed": true,
+              "indexedPath": "params.from"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "indexed": true,
+              "indexedPath": "params.to"
+            },
+            {
+              "name": "value",
+              "type": "uint256",
+              "indexed": false,
+              "indexedPath": "params.value"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
