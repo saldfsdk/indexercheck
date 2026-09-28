@@ -61,8 +61,36 @@ test("M2.3 JavaScript adapter normalizes custom event/state shapes into the exis
   assert.equal(stateParity.status, "PASS");
 });
 
-test("M2.3 TypeScript adapter source is type-stripped and loaded locally when the runtime supports it", async () => {
-  const indexed = await AdapterSource.fromConfig({ type: "adapter", module: "./adapters/custom-indexer.ts", options }, "examples");
+test("M2.3 TypeScript adapter loading follows the runtime type-stripping capability", async () => {
+  const moduleApi: any = await import("node:module");
+
+  if (typeof moduleApi.stripTypeScriptTypes !== "function") {
+    let error: unknown;
+
+    try {
+      await AdapterSource.fromConfig(
+        { type: "adapter", module: "./adapters/custom-indexer.ts", options },
+        "examples",
+      );
+    } catch (caught) {
+      error = caught;
+    }
+
+    assert.equal(error instanceof Error, true);
+    assert.equal(
+      String((error as Error).message).includes(
+        "TypeScript adapters require a Node runtime with module.stripTypeScriptTypes()",
+      ),
+      true,
+    );
+    return;
+  }
+
+  const indexed = await AdapterSource.fromConfig(
+    { type: "adapter", module: "./adapters/custom-indexer.ts", options },
+    "examples",
+  );
+
   assert.equal((await indexed.getHead()).blockNumber, 104);
   assert.equal((await indexed.getEvents("Transfer"))[0].txHash, TX);
   assert.equal((await indexed.getState("Balance"))?.value, "7");
