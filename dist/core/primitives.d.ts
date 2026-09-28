@@ -1,0 +1,11 @@
+import type { SnapshotSource } from "./source.js";
+import type { EventCompletenessCheckConfig, FirstDivergenceCheckConfig, HeadCheckConfig, IncidentReportCheckConfig, PrimitiveResult, ProvenanceCheckConfig, TransactionCompletenessCheckConfig, SourceFreshnessCheckConfig, RootCauseEvidenceCheckConfig, StateParityCheckConfig } from "./types.js";
+export declare function checkCanonicalHead(canonical: SnapshotSource, indexed: SnapshotSource, config?: HeadCheckConfig): Promise<PrimitiveResult>;
+export declare function checkSourceFreshness(indexed: SnapshotSource, config: SourceFreshnessCheckConfig): Promise<PrimitiveResult>;
+export declare function checkStateParity(canonical: SnapshotSource, indexed: SnapshotSource, config: StateParityCheckConfig): Promise<PrimitiveResult>;
+export declare function checkEventCompleteness(canonical: SnapshotSource, indexed: SnapshotSource, config: EventCompletenessCheckConfig): Promise<PrimitiveResult>;
+export declare function checkTransactionCompleteness(indexed: SnapshotSource, config: TransactionCompletenessCheckConfig): Promise<PrimitiveResult>;
+export declare function checkProvenance(indexed: SnapshotSource, config: ProvenanceCheckConfig, canonical?: SnapshotSource): Promise<PrimitiveResult>;
+export declare function checkFirstDivergence(canonical: SnapshotSource, indexed: SnapshotSource, config: FirstDivergenceCheckConfig): Promise<PrimitiveResult>;
+export declare function checkRootCauseEvidence(canonical: SnapshotSource, indexed: SnapshotSource, config: RootCauseEvidenceCheckConfig, divergence: PrimitiveResult | undefined): Promise<PrimitiveResult>;
+export declare function buildIncidentReport(config: IncidentReportCheckConfig, affected: PrimitiveResult | undefined, divergence: PrimitiveResult | undefined, rootCause: PrimitiveResult | undefined): PrimitiveResult;

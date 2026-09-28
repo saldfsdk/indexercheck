@@ -1,0 +1,8 @@
+{
+  "head": { "blockNumber": 106 },
+  "stateTimeline": {
+    "app.value": [
+      { "fromBlock": 100, "value": "0" }
+    ]
+  }
+}

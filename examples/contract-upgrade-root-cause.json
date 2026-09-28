@@ -1,0 +1,21 @@
+{
+  "name": "M0.5 — Contract upgrade root cause",
+  "canonical": { "type": "fixture", "file": "fixtures/upgrade-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/upgrade-indexed.json" },
+  "checks": {
+    "stateParity": [{ "name": "app-value", "key": "app.value" }],
+    "firstDivergence": [{
+      "name": "app-value-first-divergence",
+      "target": { "primitive": "STATE_PARITY", "key": "app.value" },
+      "fromBlock": 100,
+      "toBlock": 106,
+      "strategy": "binary-monotonic"
+    }],
+    "rootCauseEvidence": [{
+      "name": "app-value-root-cause",
+      "divergence": "app-value-first-divergence",
+      "upgradeStateKeys": ["proxy.implementation"],
+      "upgradeEventStreams": ["Upgraded"]
+    }]
+  }
+}

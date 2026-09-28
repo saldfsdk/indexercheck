@@ -1,0 +1,19 @@
+{
+  "head": { "blockNumber": 106, "blockHash": "0xhead" },
+  "blockHashes": { "103": "0xb103", "104": "0xb104", "106": "0xhead" },
+  "stateTimeline": {
+    "app.value": [
+      { "fromBlock": 100, "value": "0" },
+      { "fromBlock": 104, "value": "10" }
+    ],
+    "proxy.implementation": [
+      { "fromBlock": 100, "value": "0ximpl-a" },
+      { "fromBlock": 104, "value": "0ximpl-b" }
+    ]
+  },
+  "events": {
+    "Upgraded": [
+      { "id": "0xup:0", "blockNumber": 104, "txHash": "0xup", "logIndex": 0, "eventName": "Upgraded" }
+    ]
+  }
+}

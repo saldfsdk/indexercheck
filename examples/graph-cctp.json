@@ -1,0 +1,11 @@
+{
+  "name": "Golden Bug — Graph CCTP healthy-but-incomplete pattern",
+  "canonical": { "type": "fixture", "file": "fixtures/graph-cctp-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/graph-cctp-indexed.json" },
+  "checks": {
+    "head": { "maxLagBlocks": 0 },
+    "eventCompleteness": [
+      { "name": "message-sent", "stream": "MessageSent" }
+    ]
+  }
+}

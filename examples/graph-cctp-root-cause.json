@@ -1,0 +1,26 @@
+{
+  "name": "M0.5 — Graph CCTP missed-event root cause",
+  "canonical": { "type": "fixture", "file": "fixtures/graph-cctp-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/graph-cctp-indexed.json" },
+  "checks": {
+    "eventCompleteness": [
+      { "name": "message-sent", "stream": "MessageSent" }
+    ],
+    "firstDivergence": [
+      {
+        "name": "message-sent-first-divergence",
+        "target": { "primitive": "EVENT_COMPLETENESS", "stream": "MessageSent", "startBlock": 20300001 },
+        "fromBlock": 20300001,
+        "toBlock": 20300003,
+        "strategy": "binary-monotonic",
+        "maxChecks": 16
+      }
+    ],
+    "rootCauseEvidence": [
+      {
+        "name": "message-sent-root-cause",
+        "divergence": "message-sent-first-divergence"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "M0.4 — Goldsky WETH first divergence",
+  "canonical": { "type": "fixture", "file": "fixtures/goldsky-weth-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/goldsky-weth-indexed.json" },
+  "checks": {
+    "stateParity": [
+      { "name": "alice-weth-balance", "key": "weth.balance:0xalice" }
+    ],
+    "firstDivergence": [
+      {
+        "name": "alice-weth-first-divergence",
+        "target": { "primitive": "STATE_PARITY", "key": "weth.balance:0xalice" },
+        "fromBlock": 18999995,
+        "toBlock": 19000001,
+        "strategy": "binary-monotonic",
+        "maxChecks": 16
+      }
+    ]
+  }
+}

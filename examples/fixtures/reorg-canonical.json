@@ -1,0 +1,10 @@
+{
+  "head": { "blockNumber": 106, "blockHash": "0xhead-c" },
+  "blockHashes": { "103": "0xb103", "104": "0xcanonical104", "106": "0xhead-c" },
+  "stateTimeline": {
+    "app.value": [
+      { "fromBlock": 100, "value": "0" },
+      { "fromBlock": 104, "value": "10" }
+    ]
+  }
+}

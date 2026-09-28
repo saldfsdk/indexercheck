@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indexercheck.dev/schemas/indexercheck-watch-state-v1.schema.json",
+  "title": "IndexerCheck Watch State v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "project",
+    "updatedAt",
+    "active",
+    "pendingEvents"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "project": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "lastVerdict": {
+      "type": "string"
+    },
+    "active": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "pendingEvents": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observedAt"
+        ],
+        "properties": {
+          "observedAt": {
+            "type": "string"
+          },
+          "canonicalHead": {
+            "type": "integer"
+          },
+          "indexedHead": {
+            "type": "integer"
+          },
+          "lagBlocks": {
+            "type": "integer"
+          },
+          "sourceFreshness": {
+            "type": "string"
+          },
+          "quorumHealth": {
+            "type": "string",
+            "enum": [
+              "HEALTHY",
+              "DEGRADED",
+              "UNKNOWN"
+            ]
+          },
+          "quorumSamples": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumMinAgreement": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "quorumAgreement": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumSuccessfulProviders": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumFailedProviders": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumDistinctResponses": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumHeadSkewBlocks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "quorumFailedProviderUrls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  }
+}

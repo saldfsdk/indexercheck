@@ -1,0 +1,49 @@
+{
+  "name": "goldsky-euler-mainnet-production-pilot",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://eth.drpc.org",
+    "fallbackUrls": [
+      "https://gateway.tenderly.co/public/mainnet",
+      "https://eth.merkle.io"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 3,
+      "agreementLagBlocks": 2
+    },
+    "headTag": "latest"
+  },
+  "indexed": {
+    "type": "goldsky-euler-subgraph",
+    "graphqlUrl": "https://api.goldsky.com/api/public/project_cm4iagnemt1wp01xn4gh1agft/subgraphs/euler-simple-mainnet/latest/gn",
+    "rpcUrls": [
+      "https://eth.drpc.org",
+      "https://gateway.tenderly.co/public/mainnet",
+      "https://eth.merkle.io"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 3,
+      "agreementLagBlocks": 2
+    },
+    "sampleSize": 3
+  },
+  "checks": {
+    "sourceFreshness": [
+      {
+        "name": "goldsky-euler-freshness",
+        "stream": "TrackingVaultBalance",
+        "maxLagBlocks": 12,
+        "maxAgeSeconds": 300
+      }
+    ],
+    "provenance": [
+      {
+        "name": "goldsky-euler-state-provenance",
+        "stream": "TrackingVaultBalance",
+        "minSamples": 3
+      }
+    ]
+  }
+}

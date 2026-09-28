@@ -1,0 +1,71 @@
+{
+  "name": "polymarket-production-pilot",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://polygon.drpc.org",
+    "fallbackUrls": [
+      "https://tenderly.rpc.polygon.community",
+      "https://polygon.publicnode.com"
+    ],
+    "headTag": "latest",
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 8,
+      "agreementLagBlocks": 5
+    }
+  },
+  "indexed": {
+    "type": "polymarket-data-api",
+    "dataUrls": [
+      "https://data-api.polymarket.com/v2/trades?limit=8&taker_only=true"
+    ],
+    "rpcUrls": [
+      "https://polygon.drpc.org",
+      "https://tenderly.rpc.polygon.community",
+      "https://polygon.publicnode.com"
+    ],
+    "sampleSize": 3,
+    "maxAnchorLagBlocks": 2000,
+    "cacheTtlMs": 5000,
+    "freshnessScanMaxBlocks": 5000,
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 8,
+      "agreementLagBlocks": 5
+    }
+  },
+  "watch": {
+    "confirmConsecutiveFailures": {
+      "TRANSACTION_COMPLETENESS": 3,
+      "SOURCE_FRESHNESS": 3
+    }
+  },
+  "checks": {
+    "sourceFreshness": [
+      {
+        "name": "orderfilled-freshness",
+        "stream": "OrderFilled",
+        "maxAgeSeconds": 300,
+        "maxLagBlocks": 120,
+        "activityGraceBlocks": 20
+      }
+    ],
+    "transactionCompleteness": [
+      {
+        "name": "orderfilled-transaction-completeness",
+        "stream": "OrderFilled",
+        "windowBlocks": 20,
+        "indexedPageSize": 500,
+        "maxPages": 4,
+        "settlementLagBlocks": 5
+      }
+    ],
+    "provenance": [
+      {
+        "name": "orderfilled-provenance",
+        "stream": "OrderFilled",
+        "minSamples": 3
+      }
+    ]
+  }
+}

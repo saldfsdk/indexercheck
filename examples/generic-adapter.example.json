@@ -1,0 +1,76 @@
+{
+  "name": "my-custom-indexer-integrity",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://rpc-1.example",
+    "fallbackUrls": ["https://rpc-2.example", "https://rpc-3.example"],
+    "rpcQuorum": { "minAgreement": 2, "maxHeadSkewBlocks": 8, "agreementLagBlocks": 2 },
+    "events": {
+      "Transfer": {
+        "address": "0x1111111111111111111111111111111111111111",
+        "topics": ["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"],
+        "fromBlock": "latest",
+        "toBlock": "latest",
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "indexed": {
+    "type": "adapter",
+    "module": "./adapters/custom-indexer.mjs",
+    "options": {
+      "headBlock": 100,
+      "rangeComplete": true,
+      "events": {
+        "Transfer": [
+          {
+            "id": "legacy-1",
+            "block": 100,
+            "tx": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "log": 0,
+            "contract": "0x1111111111111111111111111111111111111111",
+            "kind": "Transfer",
+            "payload": { "from": "0x2222222222222222222222222222222222222222", "to": "0x3333333333333333333333333333333333333333", "value": "7" }
+          }
+        ]
+      },
+      "states": {
+        "Balance": {
+          "value": "7",
+          "block": 100,
+          "payload": { "account": "0x2222222222222222222222222222222222222222" }
+        }
+      }
+    }
+  },
+  "checks": {
+    "stateParity": [
+      {
+        "name": "balance-parity",
+        "key": "Balance",
+        "proof": {
+          "type": "evm-call",
+          "to": "0x1111111111111111111111111111111111111111",
+          "selector": "0x70a08231",
+          "args": [{ "type": "address", "indexedPath": "account" }],
+          "returnType": "uint256"
+        }
+      }
+    ],
+    "eventCompleteness": [
+      {
+        "name": "transfer-completeness",
+        "stream": "Transfer",
+        "proof": { "type": "evm-log-reverse", "canonicalStream": "Transfer", "windowBlocks": 50, "settlementLagBlocks": 5 }
+      }
+    ],
+    "provenance": [
+      {
+        "name": "transfer-provenance",
+        "stream": "Transfer",
+        "minSamples": 1,
+        "proof": { "type": "evm-log", "canonicalStream": "Transfer", "sampleSize": 1 }
+      }
+    ]
+  }
+}

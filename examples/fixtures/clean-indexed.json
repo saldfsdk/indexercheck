@@ -1,0 +1,12 @@
+{
+  "head": { "blockNumber": 21000000, "blockHash": "0xclean", "reportedHealthy": true, "reportedSynced": true },
+  "state": {
+    "token.totalSupply": "1000000",
+    "token.balance:0xalice": "250000"
+  },
+  "events": {
+    "Transfer": [
+      { "id": "0x001:0", "blockNumber": 20999999, "txHash": "0x001", "logIndex": 0, "eventName": "Transfer" }
+    ]
+  }
+}

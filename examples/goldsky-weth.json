@@ -1,0 +1,11 @@
+{
+  "name": "Golden Bug — Goldsky WETH balance drift pattern",
+  "canonical": { "type": "fixture", "file": "fixtures/goldsky-weth-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/goldsky-weth-indexed.json" },
+  "checks": {
+    "head": { "maxLagBlocks": 0 },
+    "stateParity": [
+      { "name": "alice-weth-balance", "key": "weth.balance:0xalice" }
+    ]
+  }
+}

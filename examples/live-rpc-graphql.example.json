@@ -1,0 +1,56 @@
+{
+  "name": "Live RPC + GraphQL example",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://YOUR_RPC_ENDPOINT",
+    "headTag": "finalized",
+    "state": {
+      "token.totalSupply": {
+        "to": "0xTOKEN",
+        "data": "0x18160ddd",
+        "decode": "uint256"
+      }
+    },
+    "events": {
+      "Transfer": {
+        "address": "0xTOKEN",
+        "topics": ["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"],
+        "fromBlock": 21000000,
+        "toBlock": 21000100,
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "indexed": {
+    "type": "graphql",
+    "url": "https://YOUR_INDEXER/graphql",
+    "head": {
+      "query": "query Head { _meta { block { number hash } hasIndexingErrors } }",
+      "blockPath": "_meta.block.number",
+      "hashPath": "_meta.block.hash"
+    },
+    "state": {
+      "token.totalSupply": {
+        "query": "query State { token(id: \"0xtoken\") { totalSupply } _meta { block { number } } }",
+        "valuePath": "token.totalSupply",
+        "blockPath": "_meta.block.number"
+      }
+    },
+    "events": {
+      "Transfer": {
+        "query": "query Events { transfers(first: 1000) { id blockNumber txHash logIndex } }",
+        "arrayPath": "transfers",
+        "idPath": "id",
+        "blockPath": "blockNumber",
+        "txHashPath": "txHash",
+        "logIndexPath": "logIndex",
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "checks": {
+    "head": { "maxLagBlocks": 5 },
+    "stateParity": [{ "name": "total-supply", "key": "token.totalSupply" }],
+    "eventCompleteness": [{ "name": "transfer-stream", "stream": "Transfer" }]
+  }
+}

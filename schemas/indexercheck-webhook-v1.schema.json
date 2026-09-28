@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indexercheck.dev/schemas/indexercheck-webhook-v1.schema.json",
+  "title": "IndexerCheck Webhook v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "event", "generatedAt", "project", "verdict", "exitCode", "incidentCount", "incidents"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "event": { "enum": ["indexercheck.verification.passed", "indexercheck.incident.detected"] },
+    "generatedAt": { "type": "string" },
+    "project": { "type": "string" },
+    "verdict": { "enum": ["PASS", "DRIFT", "INCOMPLETE", "STALLED", "UNKNOWN"] },
+    "exitCode": { "enum": [0, 1] },
+    "incidentCount": { "type": "integer", "minimum": 0 },
+    "incidents": { "type": "array", "items": { "type": "object" } }
+  }
+}

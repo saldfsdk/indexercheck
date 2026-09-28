@@ -1,0 +1,9 @@
+{
+  "head": { "blockNumber": 20300003, "blockHash": "0xcctp3", "reportedHealthy": true, "reportedSynced": true },
+  "events": {
+    "MessageSent": [
+      { "id": "0xaaa:1", "blockNumber": 20300001, "txHash": "0xaaa", "logIndex": 1, "eventName": "MessageSent" },
+      { "id": "0xccc:0", "blockNumber": 20300003, "txHash": "0xccc", "logIndex": 0, "eventName": "MessageSent" }
+    ]
+  }
+}

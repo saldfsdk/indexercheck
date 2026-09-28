@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indexercheck.dev/schemas/indexercheck-report-v1.schema.json",
+  "title": "IndexerCheck Verification Report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "tool",
+    "generatedAt",
+    "project",
+    "outcome",
+    "heads",
+    "checks",
+    "incidents"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "kind": {
+      "const": "IndexerCheckVerification"
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "indexercheck"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verdict",
+        "exitCode",
+        "passed",
+        "incidentCount"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": [
+            "PASS",
+            "DRIFT",
+            "INCOMPLETE",
+            "STALLED",
+            "UNKNOWN"
+          ]
+        },
+        "exitCode": {
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "incidentCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "heads": {
+      "type": "object"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "incidents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "verdict",
+          "timeline",
+          "rootCause",
+          "affected",
+          "relatedTransactions",
+          "relatedLogs",
+          "contractChanges"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "verdict": {
+            "enum": [
+              "PASS",
+              "DRIFT",
+              "INCOMPLETE",
+              "STALLED",
+              "UNKNOWN"
+            ]
+          },
+          "observedAtBlock": {
+            "type": "integer"
+          },
+          "timeline": {
+            "type": "object"
+          },
+          "rootCause": {
+            "type": "object"
+          },
+          "affected": {
+            "type": "object"
+          },
+          "values": {
+            "type": "object"
+          },
+          "eventDiff": {
+            "type": "object"
+          },
+          "relatedTransactions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "relatedLogs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "contractChanges": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "blockHashMismatch": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "webhook",
+        "github",
+        "allRequestedSucceeded"
+      ],
+      "properties": {
+        "webhook": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requested",
+            "status",
+            "attempts",
+            "signed"
+          ],
+          "properties": {
+            "requested": {
+              "type": "boolean"
+            },
+            "status": {
+              "enum": [
+                "NOT_REQUESTED",
+                "DELIVERED",
+                "FAILED"
+              ]
+            },
+            "attempts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "statusCode": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            },
+            "signed": {
+              "type": "boolean"
+            },
+            "error": {
+              "type": "string"
+            }
+          }
+        },
+        "github": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "detected",
+            "provider",
+            "annotationsEmitted",
+            "stepSummary"
+          ],
+          "properties": {
+            "detected": {
+              "type": "boolean"
+            },
+            "provider": {
+              "enum": [
+                "github-actions",
+                "generic-ci",
+                "local"
+              ]
+            },
+            "annotationsEmitted": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stepSummary": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "requested",
+                "status"
+              ],
+              "properties": {
+                "requested": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "enum": [
+                    "NOT_REQUESTED",
+                    "DELIVERED",
+                    "FAILED"
+                  ]
+                },
+                "path": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "allRequestedSucceeded": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "head": {
+    "blockNumber": 19000001,
+    "blockHash": "0xweth1",
+    "reportedHealthy": true,
+    "reportedSynced": true
+  },
+  "state": {
+    "weth.balance:0xalice": "0"
+  },
+  "stateBlocks": {
+    "weth.balance:0xalice": 19000001
+  },
+  "events": {
+    "Deposit": [
+      {
+        "id": "0xdep:7",
+        "blockNumber": 19000001,
+        "txHash": "0xdep",
+        "logIndex": 7,
+        "eventName": "Deposit"
+      }
+    ]
+  },
+  "stateTimeline": {
+    "weth.balance:0xalice": [
+      {
+        "fromBlock": 18999995,
+        "value": "0"
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "goldsky-kaia-usdt-production-pilot",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://public-en.node.kaia.io",
+    "fallbackUrls": [
+      "https://kaia.blockpi.network/v1/rpc/public",
+      "https://klaytn.drpc.org"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 8,
+      "agreementLagBlocks": 3
+    },
+    "headTag": "latest"
+  },
+  "indexed": {
+    "type": "goldsky-erc20-subgraph",
+    "graphqlUrl": "https://api.goldsky.com/api/public/project_cmkv4p7xa8ix401vc3f32g20g/subgraphs/usdt-demo-kaia/1.0/gn",
+    "rpcUrls": [
+      "https://public-en.node.kaia.io",
+      "https://kaia.blockpi.network/v1/rpc/public",
+      "https://klaytn.drpc.org"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 8,
+      "agreementLagBlocks": 3
+    },
+    "tokenAddress": "0xd077a400968890eacc75cdc901f0356c943e4fdb",
+    "sampleSize": 3
+  },
+  "checks": {
+    "sourceFreshness": [
+      {
+        "name": "goldsky-usdt-freshness",
+        "stream": "Transfer",
+        "maxLagBlocks": 30,
+        "maxAgeSeconds": 300
+      }
+    ],
+    "provenance": [
+      {
+        "name": "goldsky-usdt-provenance",
+        "stream": "Transfer",
+        "minSamples": 3
+      }
+    ]
+  }
+}

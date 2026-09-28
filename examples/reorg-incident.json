@@ -1,0 +1,45 @@
+{
+  "name": "M0.6 \u2014 Reorg/fork incident report",
+  "canonical": {
+    "type": "fixture",
+    "file": "fixtures/reorg-canonical.json"
+  },
+  "indexed": {
+    "type": "fixture",
+    "file": "fixtures/reorg-indexed.json"
+  },
+  "checks": {
+    "stateParity": [
+      {
+        "name": "app-value",
+        "key": "app.value"
+      }
+    ],
+    "firstDivergence": [
+      {
+        "name": "app-value-first-divergence",
+        "target": {
+          "primitive": "STATE_PARITY",
+          "key": "app.value"
+        },
+        "fromBlock": 100,
+        "toBlock": 106,
+        "strategy": "binary-monotonic"
+      }
+    ],
+    "rootCauseEvidence": [
+      {
+        "name": "app-value-root-cause",
+        "divergence": "app-value-first-divergence"
+      }
+    ],
+    "incidentReports": [
+      {
+        "name": "app-value-incident",
+        "divergence": "app-value-first-divergence",
+        "rootCause": "app-value-root-cause",
+        "affectedCheck": "app-value"
+      }
+    ]
+  }
+}

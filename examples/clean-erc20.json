@@ -1,0 +1,15 @@
+{
+  "name": "Clean ERC20 control",
+  "canonical": { "type": "fixture", "file": "fixtures/clean-canonical.json" },
+  "indexed": { "type": "fixture", "file": "fixtures/clean-indexed.json" },
+  "checks": {
+    "head": { "maxLagBlocks": 0 },
+    "stateParity": [
+      { "name": "total-supply", "key": "token.totalSupply" },
+      { "name": "alice-balance", "key": "token.balance:0xalice" }
+    ],
+    "eventCompleteness": [
+      { "name": "transfer-stream", "stream": "Transfer" }
+    ]
+  }
+}

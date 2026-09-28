@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://indexercheck.dev/schemas/indexercheck-watch-event-v1.schema.json",
+  "title": "IndexerCheck Watch Lifecycle Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "event", "eventId", "occurredAt", "project", "fingerprint", "incidentId", "verification"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "event": {
+      "enum": [
+        "indexercheck.incident.detected",
+        "indexercheck.incident.updated",
+        "indexercheck.incident.recovered"
+      ]
+    },
+    "eventId": { "type": "string" },
+    "occurredAt": { "type": "string" },
+    "project": { "type": "string" },
+    "fingerprint": { "type": "string" },
+    "incidentId": { "type": "string" },
+    "incident": { "type": "object" },
+    "previousIncident": { "type": "object" },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["detectedAt", "recoveredAt", "durationMs"],
+      "properties": {
+        "detectedAt": { "type": "string" },
+        "recoveredAt": { "type": "string" },
+        "durationMs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "generatedAt"],
+      "properties": {
+        "verdict": { "type": "string" },
+        "generatedAt": { "type": "string" },
+        "canonicalHead": { "type": "integer" },
+        "indexedHead": { "type": "integer" }
+      }
+    }
+  }
+}
