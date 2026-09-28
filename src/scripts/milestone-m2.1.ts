@@ -3,10 +3,10 @@ import { buildPresetConfig } from "../core/init.js";
 import { validateProjectConfig } from "../core/load-config.js";
 import { TOOL_VERSION } from "../core/delivery.js";
 
-const expectedVersion = "0.2.0";
-if (TOOL_VERSION !== expectedVersion) throw new Error(`unexpected tool version ${TOOL_VERSION}`);
 const pkg = JSON.parse(await readFile("package.json", "utf8"));
-if (pkg.version !== expectedVersion) throw new Error(`unexpected package version ${pkg.version}`);
+if (pkg.version !== TOOL_VERSION) {
+  throw new Error(`package version ${pkg.version} != tool version ${TOOL_VERSION}`);
+}
 
 const preset = buildPresetConfig("generic-evm-log");
 validateProjectConfig(preset);

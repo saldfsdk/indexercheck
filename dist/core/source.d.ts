@@ -88,6 +88,7 @@ export interface SnapshotSource {
 export declare class SourceUnavailableError extends Error {
     readonly sourceType: string;
     readonly operation: string;
+    readonly cause: unknown;
     constructor(sourceType: string, operation: string, cause: unknown);
 }
 export declare function isSourceUnavailableError(error: unknown): error is SourceUnavailableError;

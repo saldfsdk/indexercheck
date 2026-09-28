@@ -1,9 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { TOOL_VERSION } from "../core/delivery.js";
 
-const EXPECTED_VERSION = "0.2.0";
 const pkg = JSON.parse(await readFile("package.json", "utf8"));
-if (TOOL_VERSION !== EXPECTED_VERSION) throw new Error(`tool version ${TOOL_VERSION} != ${EXPECTED_VERSION}`);
 if (pkg.version !== TOOL_VERSION) throw new Error(`package version ${pkg.version} != machine artifact version ${TOOL_VERSION}`);
 if (!Array.isArray(pkg.files)) throw new Error("package.json must define an npm files whitelist");
 if (!pkg.scripts?.["check:package"]) throw new Error("package.json missing check:package");

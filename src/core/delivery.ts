@@ -5,7 +5,7 @@ import type { MachineDeliveryV1 } from "./live-delivery.js";
 
 export const MACHINE_SCHEMA_VERSION = "1.0" as const;
 export const WEBHOOK_SCHEMA_VERSION = "1.0" as const;
-export const TOOL_VERSION = "0.2.0" as const;
+export const TOOL_VERSION = "0.2.1" as const;
 
 export type VerificationExitCode = 0 | 1;
 

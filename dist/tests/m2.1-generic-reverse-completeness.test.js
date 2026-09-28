@@ -6,6 +6,8 @@ import { verify } from "../core/verifier.js";
 import { JsonRpcSource } from "../sources/json-rpc.js";
 import { GraphQlSource } from "../sources/graphql.js";
 import { HttpJsonSource } from "../sources/http-json.js";
+import { SourceUnavailableError } from "../core/source.js";
+import { RpcQuorumError } from "../live/rpc-quorum.js";
 const TOKEN = "0x00000000000000000000000000000000000000aa";
 const TOPIC0 = `0x${"ab".repeat(32)}`;
 function tx(n) { return `0x${n.toString(16).padStart(64, "0")}`; }
@@ -218,5 +220,99 @@ test("M2.1 unavailable canonical head becomes UNKNOWN instead of process failure
     const result = await checkEventCompleteness(canonicalUnavailable, indexed, check);
     assert.equal(result.status, "UNKNOWN");
     assert.equal(result.evidence?.classification, "CANONICAL_PROOF_UNAVAILABLE");
+});
+test("v0.2.1 preserves canonical RPC quorum diagnostics when historical range proof is unavailable", async () => {
+    const rpcQuorum = {
+        method: "eth_getLogs",
+        minAgreement: 2,
+        successfulProviders: ["https://rpc-a.example"],
+        agreeingProviders: ["https://rpc-a.example"],
+        failedProviders: [
+            {
+                url: "https://rpc-b.example",
+                error: "35: ranges over 10000 blocks are not supported on free plan",
+            },
+        ],
+        distinctResponses: 1,
+    };
+    const canonicalWithRangeFailure = {
+        getHead: async () => ({ blockNumber: 110 }),
+        getState: async () => undefined,
+        getEvents: async () => [],
+        getEventsAtWithEvidence: async () => {
+            throw new RpcQuorumError("Canonical RPC quorum failed for eth_getLogs: agreement 1/2, successful=1, distinct=1", rpcQuorum);
+        },
+    };
+    const indexed = {
+        getHead: async () => ({ blockNumber: 110 }),
+        getState: async () => undefined,
+        getEvents: async () => [],
+        getEventsAtWithEvidence: async () => ({
+            events: [],
+            metadata: { coverageProven: true },
+        }),
+    };
+    const result = await checkEventCompleteness(canonicalWithRangeFailure, indexed, check);
+    assert.equal(result.status, "UNKNOWN");
+    assert.equal(result.evidence?.classification, "CANONICAL_PROOF_UNAVAILABLE");
+    const evidence = result.evidence?.rpcQuorum;
+    assert.equal(evidence.method, "eth_getLogs");
+    assert.equal(evidence.minAgreement, 2);
+    assert.deepEqual(evidence.successfulProviders, [
+        "https://rpc-a.example",
+    ]);
+    assert.deepEqual(evidence.agreeingProviders, [
+        "https://rpc-a.example",
+    ]);
+    assert.deepEqual(evidence.failedProviders, [
+        {
+            url: "https://rpc-b.example",
+            error: "35: ranges over 10000 blocks are not supported on free plan",
+        },
+    ]);
+    assert.equal(evidence.distinctResponses, 1);
+});
+test("v0.2.1 preserves wrapped RPC quorum diagnostics when canonical head proof is unavailable", async () => {
+    const rpcQuorum = {
+        method: "eth_getBlockByNumber",
+        minAgreement: 2,
+        successfulProviders: ["https://rpc-a.example"],
+        agreeingProviders: [],
+        failedProviders: [
+            {
+                url: "https://rpc-b.example",
+                error: "HTTP 503",
+            },
+        ],
+        distinctResponses: 1,
+    };
+    const canonicalWithHeadFailure = {
+        getHead: async () => {
+            throw new SourceUnavailableError("json-rpc", "getHead", new RpcQuorumError("Canonical RPC quorum could not read enough heads: 1/2", rpcQuorum));
+        },
+        getState: async () => undefined,
+        getEvents: async () => [],
+    };
+    const indexed = {
+        getHead: async () => ({ blockNumber: 110 }),
+        getState: async () => undefined,
+        getEvents: async () => [],
+        getEventsAtWithEvidence: async () => ({
+            events: [],
+            metadata: { coverageProven: true },
+        }),
+    };
+    const result = await checkEventCompleteness(canonicalWithHeadFailure, indexed, check);
+    assert.equal(result.status, "UNKNOWN");
+    assert.equal(result.evidence?.classification, "CANONICAL_PROOF_UNAVAILABLE");
+    const evidence = result.evidence?.rpcQuorum;
+    assert.equal(evidence.method, "eth_getBlockByNumber");
+    assert.equal(evidence.minAgreement, 2);
+    assert.deepEqual(evidence.failedProviders, [
+        {
+            url: "https://rpc-b.example",
+            error: "HTTP 503",
+        },
+    ]);
 });
 //# sourceMappingURL=m2.1-generic-reverse-completeness.test.js.map

@@ -62,6 +62,7 @@ try {
     "CHANGELOG.md",
     "LICENSE",
     "RELEASE_NOTES_v0.2.0.md",
+    "RELEASE_NOTES_v0.2.1.md",
     "dist/cli.js",
     "dist/sdk.js",
     "dist/sdk.d.ts",
@@ -71,6 +72,7 @@ try {
     "examples/polymarket-pilot.json",
     "examples/goldsky-euler-mainnet-pilot.json",
     "examples/generic-evm-log.example.json",
+    "examples/envio-hyperindex.example.json",
     "schemas/indexercheck-report-v1.schema.json",
   ];
   for (const path of required) {

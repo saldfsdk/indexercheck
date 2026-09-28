@@ -6,7 +6,6 @@ const cfg = buildPresetConfig("goldsky-kaia-usdt-pilot");
 if (cfg.canonical.type !== "json-rpc" || cfg.indexed.type !== "goldsky-erc20-subgraph") throw new Error("unexpected M1.5 preset source types");
 if (new Set(DEFAULT_KAIA_RPC_URLS).size !== 3 || cfg.indexed.rpcQuorum?.minAgreement !== 2) throw new Error("M1.5 Kaia quorum not 2-of-3");
 if (cfg.indexed.graphqlUrl !== GOLDSKY_KAIA_USDT_GRAPHQL || cfg.indexed.tokenAddress !== KAIA_USDT_ADDRESS) throw new Error("M1.5 public pilot mismatch");
-if (TOOL_VERSION !== "0.2.0") throw new Error(`unexpected tool version ${TOOL_VERSION}`);
 console.log("M1.5 second production integration: Goldsky public subgraph + Kaia USDT pilot configured PASS");
 console.log("M1.5 provider neutrality: independent Goldsky GraphQL + Kaia JSON-RPC source type PASS");
 console.log("M1.5 canonical provenance: indexed Transfer id/from/to/value is checked against receipt/log evidence PASS");

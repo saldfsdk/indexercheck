@@ -1,12 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { TOOL_VERSION } from "../core/delivery.js";
 import { advanceWatchState, deriveQuorumHealth } from "../core/watch.js";
 import { buildPresetConfig } from "../core/init.js";
 function incompleteReport(at) {
     return {
         schemaVersion: "1.0",
         kind: "IndexerCheckVerification",
-        tool: { name: "indexercheck", version: "0.2.0" },
+        tool: { name: "indexercheck", version: TOOL_VERSION },
         generatedAt: at,
         project: { name: "polymarket-production-pilot" },
         outcome: { verdict: "INCOMPLETE", exitCode: 1, passed: false, incidentCount: 0 },
@@ -26,7 +27,7 @@ function passReport(at) {
     return {
         schemaVersion: "1.0",
         kind: "IndexerCheckVerification",
-        tool: { name: "indexercheck", version: "0.2.0" },
+        tool: { name: "indexercheck", version: TOOL_VERSION },
         generatedAt: at,
         project: { name: "polymarket-production-pilot" },
         outcome: { verdict: "PASS", exitCode: 0, passed: true, incidentCount: 0 },

@@ -1,5 +1,25 @@
-import type { EventRangeSnapshot, SnapshotSource } from "./source.js";
+import {
+  SourceUnavailableError,
+  type EventRangeSnapshot,
+  type SnapshotSource,
+} from "./source.js";
 import type { EventCompletenessCheckConfig, EventRecord, PrimitiveResult } from "./types.js";
+import { RpcQuorumError, type RpcQuorumEvidence } from "../live/rpc-quorum.js";
+
+function rpcQuorumEvidence(error: unknown): RpcQuorumEvidence | undefined {
+  let current: unknown = error;
+
+  for (let depth = 0; depth < 8 && current; depth += 1) {
+    if (current instanceof RpcQuorumError) return current.evidence;
+    if (current instanceof SourceUnavailableError) {
+      current = current.cause;
+      continue;
+    }
+    break;
+  }
+
+  return undefined;
+}
 
 function eventKey(event: EventRecord): string | undefined {
   if (!event.txHash || event.logIndex === undefined || !Number.isFinite(event.logIndex)) return undefined;
@@ -41,10 +61,19 @@ export async function genericEvmLogReverseCompleteness(
   try { canonicalHead = await canonical.getHead(); }
   catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
+    const rpcQuorum = rpcQuorumEvidence(error);
     return {
       primitive: "EVENT_COMPLETENESS", name: config.name, status: "UNKNOWN",
       summary: `Canonical head could not be proven for '${canonicalStream}'.`,
-      evidence: { stream: config.stream, canonicalStream, classification: "CANONICAL_PROOF_UNAVAILABLE", windowBlocks, settlementLagBlocks, reason },
+      evidence: {
+        stream: config.stream,
+        canonicalStream,
+        classification: "CANONICAL_PROOF_UNAVAILABLE",
+        windowBlocks,
+        settlementLagBlocks,
+        reason,
+        ...(rpcQuorum ? { rpcQuorum } : {}),
+      },
     };
   }
   const toBlock = canonicalHead.blockNumber - settlementLagBlocks;
@@ -64,10 +93,22 @@ export async function genericEvmLogReverseCompleteness(
   try { canonicalRange = await readRange(canonical, canonicalStream, fromBlock, toBlock); }
   catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
+    const rpcQuorum = rpcQuorumEvidence(error);
     return {
       primitive: "EVENT_COMPLETENESS", name: config.name, status: "UNKNOWN",
-      summary: `Canonical historical range could not be proven for '${canonicalStream}'.`, observedAtBlock: toBlock,
-      evidence: { stream: config.stream, canonicalStream, classification: "CANONICAL_PROOF_UNAVAILABLE", fromBlock, toBlock, windowBlocks, settlementLagBlocks, reason },
+      summary: `Canonical historical range could not be proven for '${canonicalStream}'.`,
+      observedAtBlock: toBlock,
+      evidence: {
+        stream: config.stream,
+        canonicalStream,
+        classification: "CANONICAL_PROOF_UNAVAILABLE",
+        fromBlock,
+        toBlock,
+        windowBlocks,
+        settlementLagBlocks,
+        reason,
+        ...(rpcQuorum ? { rpcQuorum } : {}),
+      },
     };
   }
   let indexedRange;

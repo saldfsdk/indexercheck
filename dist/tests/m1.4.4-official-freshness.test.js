@@ -125,6 +125,5 @@ test("M1.4.4 machine artifact reports the current tool version", () => {
     const report = { name: "version", verdict: "PASS", generatedAt: "2026-09-27T00:00:00.000Z", results: [] };
     const artifact = buildMachineReport(report);
     assert.equal(artifact.tool.version, TOOL_VERSION);
-    assert.equal(artifact.tool.version, "0.2.0");
 });
 //# sourceMappingURL=m1.4.4-official-freshness.test.js.map

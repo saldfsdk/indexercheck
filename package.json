@@ -1,6 +1,6 @@
 {
   "name": "indexercheck",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "bin": {
     "indexercheck": "dist/cli.js"
@@ -139,7 +139,9 @@
     "examples/adapters/custom-indexer.mjs",
     "examples/adapters/custom-indexer.ts",
     "LICENSE",
-    "RELEASE_NOTES_v0.2.0.md"
+    "RELEASE_NOTES_v0.2.0.md",
+    "examples/envio-hyperindex.example.json",
+    "RELEASE_NOTES_v0.2.1.md"
   ],
   "exports": {
     ".": {

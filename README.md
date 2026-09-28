@@ -24,16 +24,16 @@ Custom adapters may normalize proprietary indexed data, but they **cannot redefi
 
 ### Install
 
-After the first npm registry publication:
+Install the current public package from npm:
 
 ```powershell
 npm install --save-dev indexercheck
 ```
 
-Before the first registry publication, the release artifact can be tested directly:
+To reproduce a specific release exactly:
 
 ```powershell
-npm install --save-dev ./indexercheck-0.2.0.tgz
+npm install --save-dev indexercheck@0.2.1
 ```
 
 ### Create a generic config
@@ -170,7 +170,9 @@ An optional `head` mapping may be supplied. If omitted, the REST/GraphQL generic
 
 ## Generic GraphQL example
 
-GraphQL uses the existing generic event mapping, now without requiring a separate head query for provenance-only configurations:
+GraphQL uses the same generic event contract as REST. Provenance-only configurations do not require a separate head query.
+
+For reverse completeness, the GraphQL query must actually consume the configured historical range variables:
 
 ```json
 {
@@ -179,7 +181,7 @@ GraphQL uses the existing generic event mapping, now without requiring a separat
     "url": "https://indexer.example/graphql",
     "events": {
       "Transfer": {
-        "query": "query { transfers(first: 3) { transactionHash logIndex blockNumber from to value } }",
+        "query": "query($fromBlock: Int!, $toBlock: Int!) { transfers(where: { blockNumber: { gte: $fromBlock, lte: $toBlock } }) { transactionHash logIndex blockNumber from to value } }",
         "arrayPath": "transfers",
         "blockPath": "blockNumber",
         "txHashPath": "transactionHash",
@@ -193,7 +195,64 @@ GraphQL uses the existing generic event mapping, now without requiring a separat
 }
 ```
 
+`historicalFromBlockVariable` and `historicalToBlockVariable` only tell IndexerCheck which GraphQL variables to populate. The query itself must declare and use those variables to restrict the returned rows to the requested block range.
+
+Only set `historicalRangeComplete: true` when that request is guaranteed to return the entire requested event set. Do not set it on a query with an unresolved page limit, cursor, `first`, `limit`, or another truncation mechanism unless your adapter or API contract proves that pagination is exhausted.
+
 The generic proof kernel does not care whether the row came from REST or GraphQL after it has been mapped into an event record.
+
+## Envio HyperIndex example
+
+A checked-in Envio HyperIndex recipe is available at:
+
+```text
+examples/envio-hyperindex.example.json
+```
+
+The external Envio pilot showed that strong event verification requires Envio to retain proof-ready raw event identity.
+
+In the Envio project:
+
+```yaml
+raw_events: true
+
+field_selection:
+  transaction_fields:
+    - hash
+```
+
+The generic mapping then uses Envio's `raw_events` fields:
+
+```text
+block_number
+log_index
+src_address
+transaction_fields.hash
+params
+```
+
+For provenance, use a bounded recent query such as `limit: 3`.
+
+For reverse completeness, use a separate historical range query that consumes IndexerCheck's requested `$fromBlock` and `$toBlock` variables and does not silently truncate the result.
+
+The checked-in example intentionally uses two indexed stream mappings:
+
+```text
+Transfer       -> sampled provenance
+TransferRange  -> bounded reverse completeness
+```
+
+This avoids requiring historical variables during ordinary provenance reads.
+
+`historicalRangeComplete: true` is a trust contract, not a pagination switch. Set it only when the GraphQL request returns the entire requested block range. If the endpoint can truncate or paginate the result, either exhaust pagination in an Adapter SDK implementation or leave coverage unproven so IndexerCheck returns `UNKNOWN`.
+
+The example uses Envio's local development Hasura endpoint and its conventional local `testing` admin secret. Replace the endpoint, authentication, contract name, contract address, RPC providers, and settlement/window parameters for your deployment.
+
+The first external pilot and its positive/negative controls are documented in:
+
+```text
+docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md
+```
 
 ## Canonical EVM-log proof
 
@@ -453,7 +512,7 @@ npx indexercheck -v
 Expected version:
 
 ```text
-0.2.0
+0.2.1
 ```
 
 ## Known limitations
@@ -470,20 +529,46 @@ Expected version:
 - **Adapters cannot be canonical sources.** Custom code is deliberately indexed-only.
 - **TypeScript adapter execution is runtime-dependent and experimental.** Prefer compiled `.mjs`/`.js` for production.
 
-## First publication checklist
+## Release and repository
 
-The `0.2.0` artifact is public-package metadata ready. Before the first registry publish:
+`indexercheck` is publicly distributed through npm and the canonical public repository is:
 
-```powershell
-npm install
-npm run check:first-publish
+```text
+https://github.com/saldfsdk/indexercheck
 ```
 
-`check:first-publish` runs the full release gate, a real `npm publish --dry-run`, and a live registry lookup for the unscoped name `indexercheck`. A 404 from the registry is treated as available; an existing package is a hard failure.
+Repository maintainers can run the full release gate with:
 
-The canonical GitHub repository metadata points to `saldfsdk/indexercheck`. The connected GitHub account does not currently contain that repository, and this environment cannot create repositories, so the first-publish gate also checks that the repository exists and is public before publication. See `REPOSITORY_SETUP.md` for the exact setup commands.
+```powershell
+npm run check:release
+```
+
+For packaging alone:
+
+```powershell
+npm run check:package
+```
 
 The project is licensed under MIT. See `LICENSE`.
+
+## External validation
+
+The first post-release external onboarding pilot used Envio HyperIndex on Robinhood Chain mainnet.
+
+It exercised:
+
+- config-only GraphQL provenance;
+- quorum-backed canonical `eth_getLogs`;
+- active-window reverse completeness;
+- deliberate field corruption producing `DRIFT`;
+- deliberate indexed-event omission producing `INCOMPLETE`;
+- fail-closed `UNKNOWN` behavior when canonical RPC evidence could not reach quorum.
+
+See the repository report:
+
+```text
+https://github.com/saldfsdk/indexercheck/blob/main/docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md
+```
 
 ## Release status
 
@@ -493,7 +578,8 @@ M2.0             generic indexed row → canonical EVM log provenance    COMPLET
 M2.1             generic reverse event completeness                    COMPLETE
 M2.2             generic historical state proof                         COMPLETE
 M2.3             adapter/data-contract SDK                              COMPLETE
-v0.2.0           Bring Your Own Indexer public-release baseline              CURRENT
+v0.2.0           Bring Your Own Indexer public-release baseline              BASELINE
+v0.2.1           external onboarding + RPC quorum diagnostics                 CURRENT
 ```
 
 Detailed M1 engineering history remains in `docs/M1-DEVELOPMENT-NOTES.md`. M2 development history is summarized in `docs/M2-DEVELOPMENT-NOTES.md`.
