@@ -254,6 +254,62 @@ The first external pilot and its positive/negative controls are documented in:
 docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md
 ```
 
+## Ponder example
+
+A checked-in Ponder recipe is available at:
+
+```text
+examples/ponder-ethereum.example.json
+```
+
+The external Ponder pilot showed that the generated ERC-20 reference entity is not proof-ready by default. For deterministic EVM-log provenance, retain explicit canonical event identity in the indexed table:
+
+```ts
+blockNumber: t.bigint().notNull(),
+transactionHash: t.hex().notNull(),
+logIndex: t.integer().notNull(),
+```
+
+and persist the corresponding event metadata:
+
+```ts
+blockNumber: event.block.number,
+transactionHash: event.transaction.hash,
+logIndex: event.log.logIndex,
+```
+
+Do not rely on an opaque framework-generated event ID as a substitute for explicit canonical identity.
+
+Once these fields are exposed through Ponder GraphQL, IndexerCheck can use the normal generic GraphQL proof path. No Ponder-specific canonical verifier is required.
+
+The checked-in Ponder example is intentionally **provenance-only**. Ponder GraphQL queries are paginated, so reverse completeness requires stronger range-coverage evidence.
+
+Only set `historicalRangeComplete: true` when the entire requested range is known to have been returned. For a bounded query, verify that pagination is exhausted. For general use, a pagination-aware Adapter SDK implementation can fetch all pages before returning:
+
+```js
+{
+  events,
+  coverageProven: true
+}
+```
+
+The second external pilot exercised real Ethereum USDC data and demonstrated:
+
+```text
+PROVENANCE          PASS        3/3
+EVENT_COMPLETENESS  COMPLETE    846/846
+missing event       INCOMPLETE  845/846
+corrupted value     DRIFT       2/3
+indexed outage      UNKNOWN
+canonical outage    UNKNOWN
+```
+
+See:
+
+```text
+docs/EXTERNAL-PILOT-PONDER-ETHEREUM.md
+```
+
 ## Canonical EVM-log proof
 
 The canonical JSON-RPC source defines the event filter:
@@ -553,9 +609,11 @@ The project is licensed under MIT. See `LICENSE`.
 
 ## External validation
 
-The first post-release external onboarding pilot used Envio HyperIndex on Robinhood Chain mainnet.
+Two post-release external onboarding pilots have been completed.
 
-It exercised:
+### Envio HyperIndex / Robinhood Chain
+
+The first pilot exercised:
 
 - config-only GraphQL provenance;
 - quorum-backed canonical `eth_getLogs`;
@@ -564,10 +622,29 @@ It exercised:
 - deliberate indexed-event omission producing `INCOMPLETE`;
 - fail-closed `UNKNOWN` behavior when canonical RPC evidence could not reach quorum.
 
-See the repository report:
+Report:
 
 ```text
-https://github.com/saldfsdk/indexercheck/blob/main/docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md
+docs/EXTERNAL-PILOT-ENVIO-ROBINHOOD.md
+```
+
+### Ponder / Ethereum USDC
+
+The second pilot started from Ponder's generated ERC-20 reference application and added only explicit proof identity fields on the indexed side.
+
+It exercised:
+
+- generic GraphQL provenance with decoded `from`, `to`, and `value`;
+- complete bounded reverse coverage of 846 canonical Transfer events;
+- one deliberately omitted event producing `INCOMPLETE`;
+- one deliberately corrupted value producing `DRIFT`;
+- indexed-source failure producing `UNKNOWN / INDEXED_SOURCE_UNAVAILABLE`;
+- canonical quorum failure producing `UNKNOWN / CANONICAL_PROOF_UNAVAILABLE`.
+
+Report:
+
+```text
+docs/EXTERNAL-PILOT-PONDER-ETHEREUM.md
 ```
 
 ## Release status

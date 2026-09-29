@@ -1,0 +1,76 @@
+{
+  "name": "ponder-ethereum-integrity",
+  "canonical": {
+    "type": "json-rpc",
+    "url": "https://rpc-1.example",
+    "fallbackUrls": [
+      "https://rpc-2.example",
+      "https://rpc-3.example"
+    ],
+    "rpcQuorum": {
+      "minAgreement": 2,
+      "maxHeadSkewBlocks": 8,
+      "agreementLagBlocks": 2
+    },
+    "headTag": "latest",
+    "events": {
+      "Transfer": {
+        "address": "0x1111111111111111111111111111111111111111",
+        "topics": [
+          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        ],
+        "fromBlock": "latest",
+        "toBlock": "latest",
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "indexed": {
+    "type": "graphql",
+    "url": "http://localhost:42069/graphql",
+    "events": {
+      "Transfer": {
+        "query": "query { transferEvents(orderBy: \"blockNumber\", orderDirection: \"desc\", limit: 3) { items { blockNumber transactionHash logIndex amount from to } } }",
+        "arrayPath": "transferEvents.items",
+        "blockPath": "blockNumber",
+        "txHashPath": "transactionHash",
+        "logIndexPath": "logIndex",
+        "eventName": "Transfer"
+      }
+    }
+  },
+  "checks": {
+    "provenance": [
+      {
+        "name": "ponder-transfer-provenance",
+        "stream": "Transfer",
+        "minSamples": 3,
+        "proof": {
+          "type": "evm-log",
+          "canonicalStream": "Transfer",
+          "sampleSize": 3,
+          "inputs": [
+            {
+              "name": "from",
+              "type": "address",
+              "indexed": true,
+              "indexedPath": "from"
+            },
+            {
+              "name": "to",
+              "type": "address",
+              "indexed": true,
+              "indexedPath": "to"
+            },
+            {
+              "name": "value",
+              "type": "uint256",
+              "indexed": false,
+              "indexedPath": "amount"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

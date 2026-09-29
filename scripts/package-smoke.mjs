@@ -73,6 +73,7 @@ try {
     "examples/goldsky-euler-mainnet-pilot.json",
     "examples/generic-evm-log.example.json",
     "examples/envio-hyperindex.example.json",
+    "examples/ponder-ethereum.example.json",
     "schemas/indexercheck-report-v1.schema.json",
   ];
   for (const path of required) {

@@ -141,6 +141,7 @@
     "LICENSE",
     "RELEASE_NOTES_v0.2.0.md",
     "examples/envio-hyperindex.example.json",
+    "examples/ponder-ethereum.example.json",
     "RELEASE_NOTES_v0.2.1.md"
   ],
   "exports": {
